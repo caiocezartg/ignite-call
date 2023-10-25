@@ -88,9 +88,8 @@ export default function TimeIntervals() {
     },
   });
 
-  const router = useRouter();
-
   const weekDays = getWeekDays();
+  const router = useRouter();
 
   const { fields } = useFieldArray({
     control,
@@ -105,6 +104,8 @@ export default function TimeIntervals() {
     await api.post("/users/time-intervals", {
       intervals,
     });
+
+    await router.push("/register/update-profile");
   }
 
   return (
