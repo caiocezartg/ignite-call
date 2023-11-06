@@ -9,7 +9,7 @@ import {
 import Calendar from "@/components/Calendar";
 
 function CalendarStep() {
-  const isDateSelected = true;
+  const isDateSelected = false;
 
   return (
     <Container isTimePickerOpen={isDateSelected}>
