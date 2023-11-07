@@ -70,7 +70,12 @@ function Calendar() {
 
     const calendarDays = [
       ...previousMonthFillArray,
-      ...daysInMonthArray,
+      ...daysInMonthArray.map((date) => {
+        return {
+          ...date,
+          disabled: date.date.endOf("day").isBefore(new Date()),
+        };
+      }),
       ...nextMonthFillArray,
     ];
 
