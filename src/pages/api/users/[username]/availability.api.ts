@@ -14,7 +14,7 @@ export default async function handler(
   const { date } = req.query;
 
   if (!date) {
-    return res.status(400).json({ message: "Date no provided." });
+    return res.status(400).json({ message: "Date not provided." });
   }
 
   const user = await prisma.user.findUnique({
@@ -24,7 +24,7 @@ export default async function handler(
   });
 
   if (!user) {
-    return res.status(400).json({ message: "User does not exist." });
+    return res.status(400).json({ message: "User doesn't exist." });
   }
 
   const referenceDate = dayjs(String(date));

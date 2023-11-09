@@ -10,6 +10,13 @@ import {
 import { CaretLeft, CaretRight } from "phosphor-react";
 import { getWeekDays } from "@/utils/get-week-days";
 import dayjs from "dayjs";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/lib/axios";
+import { useRouter } from "next/router";
+
+interface BlockedDates {
+  blockedWeekDays: number[];
+}
 
 interface CalendarProps {
   selectedDate: Date | null;
@@ -37,6 +44,27 @@ function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
 
   const currentMonth = currentDate.format("MMMM");
   const currentYear = currentDate.format("YYYY");
+
+  const router = useRouter();
+  const username = String(router.query.username);
+
+  const { data: blockedDates } = useQuery<BlockedDates>({
+    queryKey: [
+      "blocked-dates",
+      currentDate.get("year"),
+      currentDate.get("month"),
+    ],
+    queryFn: async () => {
+      const response = await api.get(`/users/${username}/blocked-dates`, {
+        params: {
+          year: currentDate.get("year"),
+          month: currentDate.get("month"),
+        },
+      });
+
+      return response.data;
+    },
+  });
 
   const calendarWeeks = useMemo(() => {
     const daysInMonthArray = Array.from({
@@ -75,10 +103,12 @@ function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
 
     const calendarDays = [
       ...previousMonthFillArray,
-      ...daysInMonthArray.map((date) => {
+      ...daysInMonthArray.map((day) => {
         return {
-          ...date,
-          disabled: date.date.endOf("day").isBefore(new Date()),
+          ...day,
+          disabled:
+            day.date.endOf("day").isBefore(new Date()) ||
+            blockedDates?.blockedWeekDays.includes(day.date.get("day")),
         };
       }),
       ...nextMonthFillArray,
@@ -94,7 +124,7 @@ function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
     }
 
     return calendarWeeks;
-  }, [currentDate]);
+  }, [currentDate, blockedDates]);
 
   return (
     <CalendarContainer>
