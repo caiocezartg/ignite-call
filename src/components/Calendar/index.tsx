@@ -16,6 +16,7 @@ import { useRouter } from "next/router";
 
 interface BlockedDates {
   blockedWeekDays: number[];
+  blockedDates: number[];
 }
 
 interface CalendarProps {
@@ -58,7 +59,7 @@ function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
       const response = await api.get(`/users/${username}/blocked-dates`, {
         params: {
           year: currentDate.get("year"),
-          month: currentDate.get("month"),
+          month: currentDate.get("month") + 1,
         },
       });
 
@@ -108,7 +109,8 @@ function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
           ...day,
           disabled:
             day.date.endOf("day").isBefore(new Date()) ||
-            blockedDates?.blockedWeekDays.includes(day.date.get("day")),
+            blockedDates?.blockedWeekDays.includes(day.date.get("day")) ||
+            blockedDates?.blockedDates.includes(day.date.get("date")),
         };
       }),
       ...nextMonthFillArray,

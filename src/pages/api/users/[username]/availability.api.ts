@@ -70,9 +70,13 @@ export default async function handler(
   });
 
   const availableTimesArray = possibleTimesArray.filter((time) => {
-    return !blockedTimes.some(
+    const isTimeBlocked = blockedTimes.some(
       (blockedTime) => blockedTime.date.getHours() === time
     );
+
+    const isTimeInPast = referenceDate.set("hour", time).isBefore(new Date());
+
+    return !isTimeBlocked && !isTimeInPast;
   });
 
   return res.json({ possibleTimesArray, availableTimesArray });
